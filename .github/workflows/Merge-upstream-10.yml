@@ -21,7 +21,7 @@ jobs:
           upstream_branch: main
           downstream_branch: main
           token: ${{ secrets.ACCESS_TOKEN }}
-      # 检出代码
+      # 切换
       - name: CheckoutRepo
         uses: actions/checkout@v3
       # 发送邮件
