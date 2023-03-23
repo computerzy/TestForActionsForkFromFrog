@@ -1,0 +1,45 @@
+name: Merge-upstream-13
+
+on:
+  # 推送代码后触发
+  push:
+  # 定时任务触发，使用 cron 规则
+  schedule:
+    - cron: '*/15 * * * *'
+
+jobs:
+  fork_upstream:
+    runs-on: ubuntu-latest
+    steps:
+      - run:
+          echo "Current time is $(date +'%Y-%m-%d %H:%M:%S')"
+      # 同步  
+      # Step 1: run a standard checkout action, provided by github
+      - name: Checkout main
+        uses: actions/checkout@v3
+      # Step 2: run this sync action - specify the upstream repo, upstream branch to sync with, and target sync branch
+      - name: Pull (Fast-Forward) upstream changes
+        id: sync
+        uses: aormsby/Fork-Sync-With-Upstream-action@v2.1
+        with:
+          upstream_repository: LuckyJumpingFrog/TestForActions
+          upstream_branch: main
+          target_branch: main
+          git_pull_args: --ff-only                    # optional arg use, defaults to simple 'pull'
+          github_token: ${{ secrets.ACCESS_TOKEN }}   # optional, for accessing repos that require authentication
+      # 检出代码
+      - name: CheckoutRepo
+        uses: actions/checkout@v3
+      # 发送邮件
+      - name: Send email
+        uses: devellany/send-mail@v1.0.2
+        with:
+          host: smtp.sina.com
+          account: ${{secrets.MAIL_USERNAME}}
+          password: ${{secrets.MAIL_PASSWORD}}
+          sender: zy
+          from: ${{secrets.MAIL_USERNAME}}
+          to: ${{secrets.MAIL_USERNAME}}
+          subject: Merge-upstream-13 test ok.
+          body: "this is a test for Merge-upstream-13"
+          attachments: '[{"path":"README.md"}]'
