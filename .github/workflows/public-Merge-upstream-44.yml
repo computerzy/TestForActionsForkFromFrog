@@ -3,9 +3,9 @@ name: public-Merge-upstream-44
 on:
   # 推送代码后触发
   push:
-  # 定时任务触发，使用 cron 规则
-  schedule:
-    - cron: '* */12 * * *'
+  # 定时任务触发，使用 cron 规则，每12小时执行一次
+  #schedule:
+  #  - cron: '* */12 * * *'
 
 jobs:
   fork_upstream:
