@@ -12,11 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      UPSTREAM_REPOSITORY: LuckyJumpingFrog/TestPrivateActions
-      UPSTREAM_REPO: https://github.com/LuckyJumpingFrog/TestPrivateActions
+      UPSTREAM_REPOSITORY: LuckyJumpingFrog/TestForActions
+      UPSTREAM_REPO: https://github.com/LuckyJumpingFrog/TestForActions
       UPSTREAM_BRANCH: main
       DOWNSTREAM_BRANCH: main
-      GITHUB_REPOSITORY: computerzy/ForkPrivateFromFrog
+      GITHUB_REPOSITORY: computerzy/TestForActionsForkFromFrog
       #GITHUB_ACTOR: computerzy
       
     steps:
