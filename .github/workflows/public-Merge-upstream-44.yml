@@ -1,0 +1,61 @@
+name: public-Merge-upstream-44
+
+on:
+  # 推送代码后触发
+  push:
+  # 定时任务触发，使用 cron 规则
+  schedule:
+    - cron: '* */12 * * *'
+
+jobs:
+  fork_upstream:
+    runs-on: ubuntu-latest
+    
+    env:
+      UPSTREAM_REPOSITORY: LuckyJumpingFrog/TestPrivateActions
+      UPSTREAM_REPO: https://github.com/LuckyJumpingFrog/TestPrivateActions
+      UPSTREAM_BRANCH: main
+      DOWNSTREAM_BRANCH: main
+      GITHUB_REPOSITORY: computerzy/ForkPrivateFromFrog
+      #GITHUB_ACTOR: computerzy
+      
+    steps:
+      - name: print current time
+        run:
+          echo "Current time is $(date +'%Y-%m-%d %H:%M:%S')"
+      - name: SYNC UPSTREAM
+        run: |
+          git clone "https://x-access-token:${{ secrets.ACCESS_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" work
+          cd work
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git config --local user.password ${{ secrets.ACCESS_TOKEN }}
+          git remote set-url origin "https://x-access-token:${{ secrets.ACCESS_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
+          git remote add upstream "$UPSTREAM_REPO"
+          git remote -v
+          git checkout ${DOWNSTREAM_BRANCH}
+          git config remote.origin.url "https://x-access-token:${{ secrets.ACCESS_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"       
+          git config remote.upstream.url "https://x-access-token:${{ secrets.ACCESS_TOKEN }}@github.com/${UPSTREAM_REPOSITORY}.git" 
+          #git config -l       
+          git fetch upstream
+          git merge upstream/${DOWNSTREAM_BRANCH}
+          git push --force origin ${DOWNSTREAM_BRANCH}
+          cd ..
+          rm -rf work
+          echo "Successful!"
+      # 检出代码
+      - name: CheckoutRepo
+        uses: actions/checkout@v3
+      # 发送邮件
+      - name: Send email
+        uses: devellany/send-mail@v1.0.2
+        with:
+          host: ${{ secrets.SMTP }}
+          account: ${{secrets.MAIL_USERNAME}}
+          password: ${{secrets.MAIL_PASSWORD}}
+          sender: ${{ secrets.MAIL_SENDER }}
+          from: ${{secrets.MAIL_USERNAME}}
+          to: ${{secrets.MAIL_USERNAME}}
+          subject: public-Merge-upstream-44 test ok.
+          body: "this is a test for public-Merge-upstream-44"
+          attachments: '[{"path":"README.md"}]'
